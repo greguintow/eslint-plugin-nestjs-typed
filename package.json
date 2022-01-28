@@ -1,6 +1,6 @@
 {
-    "name": "@darraghor/eslint-plugin-nestjs-typed",
-    "version": "1.0.0",
+    "name": "@greguintow/eslint-plugin-nestjs-typed",
+    "version": "1.0.8",
     "description": "Eslint rules for nestjs projects",
     "scripts": {
         "clean": "rm -Rf ./dist/",
