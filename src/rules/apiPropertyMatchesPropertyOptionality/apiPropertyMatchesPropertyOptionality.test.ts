@@ -25,6 +25,22 @@ ruleTester.run("api-property-matches-property-optionality", rule, {
                 @ApiPropertyOptional()
                 thisIsAStringProp: string | undefined;}`,
         },
+        {
+            code: `class TestClass {
+                @Field({ nullable: true })
+                @IsOptional()
+                thisIsAStringProp?: string;}`,
+        },
+        {
+            code: `class TestClass {
+                @Field({ nullable: true })
+                thisIsAStringProp?: string;}`,
+        },
+        {
+            code: `class TestClass {
+                @Field()
+                thisIsAStringProp: string;}`,
+        },
     ],
     invalid: [
         {
@@ -64,6 +80,70 @@ ruleTester.run("api-property-matches-property-optionality", rule, {
             errors: [
                 {
                     messageId: "shouldUseOptionalDecorator",
+                },
+            ],
+        },
+        {
+            code: `class TestClass {
+                @Field({ nullable: true })
+                @IsString()
+                thisIsAStringProp?: string;}`,
+            errors: [
+                {
+                    messageId: "shouldUseOptionalDecorator",
+                },
+            ],
+        },
+        {
+            code: `class TestClass {
+                @Field()
+                thisIsAStringProp?: string;}`,
+            errors: [
+                {
+                    messageId: "shouldUseOptionalDecorator",
+                },
+            ],
+        },
+        {
+            code: `class TestClass {
+                @Field()
+                @IsOptional()
+                thisIsAStringProp?: string;}`,
+            errors: [
+                {
+                    messageId: "shouldUseOptionalDecorator",
+                },
+            ],
+        },
+        {
+            code: `class TestClass {
+                @Field({ nullable: true })
+                @IsOptional()
+                thisIsAStringProp: string;}`,
+            errors: [
+                {
+                    messageId: "shouldUseRequiredDecorator",
+                },
+            ],
+        },
+        {
+            code: `class TestClass {
+                @Field()
+                @IsOptional()
+                thisIsAStringProp: string;}`,
+            errors: [
+                {
+                    messageId: "shouldUseRequiredDecorator",
+                },
+            ],
+        },
+        {
+            code: `class TestClass {
+                @IsOptional()
+                thisIsAStringProp: string;}`,
+            errors: [
+                {
+                    messageId: "shouldUseRequiredDecorator",
                 },
             ],
         },
