@@ -65,7 +65,7 @@ export const typedTokenHelpers = {
     ): boolean {
         let didMatchExpectedValues = false;
         if (firstArgument !== undefined) {
-            const foundPropertyOfName = firstArgument.properties.find(
+            const foundPropertyOfName = firstArgument?.properties?.find(
                 (p) =>
                     ((p as TSESTree.Property).key as TSESTree.Identifier)
                         .name === propertyName
@@ -112,11 +112,31 @@ export const typedTokenHelpers = {
                 (
                     (d.expression as TSESTree.CallExpression)
                         .callee as TSESTree.Identifier
-                ).name
+                )?.name
             )
         );
 
         return decorators || [];
+    },
+    getDecoratorsNamedOrdered(
+        n:
+            | TSESTree.ClassDeclaration
+            | TSESTree.PropertyDefinition
+            | TSESTree.MethodDefinition,
+        decoratorNames: string[]
+    ): (TSESTree.Decorator | undefined)[] {
+        const decorators = decoratorNames.map((decoratorName) => {
+            return n.decorators?.find((decorator) => {
+                return (
+                    (
+                        (decorator.expression as TSESTree.CallExpression)
+                            .callee as TSESTree.Identifier
+                    )?.name === decoratorName
+                );
+            });
+        });
+
+        return decorators;
     },
     parseStringToAst(
         code: string,
