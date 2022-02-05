@@ -3,6 +3,7 @@ import {AST_NODE_TYPES} from "@typescript-eslint/experimental-utils";
 import {createRule} from "../../utils/createRule";
 import {typedTokenHelpers} from "../../utils/typedTokenHelpers";
 import * as classValidator from "class-validator";
+import {RuleContext} from "@typescript-eslint/experimental-utils/dist/ts-eslint";
 
 const CLASS_VALIDATOR_DECORATOR_NAMES = new Set(
     Object.keys(classValidator as object)
@@ -43,7 +44,15 @@ export const shouldUseRequiredDecorator = (
 };
 
 export const shouldUseOptionalDecorator = (
-    node: TSESTree.PropertyDefinition
+    node: TSESTree.PropertyDefinition,
+    context: Readonly<
+        RuleContext<
+            | "shouldUseOptionalDecorator"
+            | "shouldUseRequiredDecorator"
+            | "shouldSetFieldAsNullable",
+            never[]
+        >
+    >
 ): boolean => {
     const hasRequiredDecorator = typedTokenHelpers.nodeHasDecoratorsNamed(
         node,
@@ -76,6 +85,17 @@ export const shouldUseOptionalDecorator = (
                         false
                     )
                 );
+            if (isSetAsRequired) {
+                context.report({
+                    node,
+                    messageId: "shouldSetFieldAsNullable",
+                    fix: (fixer) => {
+                        if (fieldArguments.length === 2) {
+                            // fixer.replaceText(fieldArguments[1], );
+                        }
+                    },
+                });
+            }
         }
         const hasDecorator = node.decorators?.some(
             (decorator) =>
@@ -106,6 +126,7 @@ const rule = createRule({
         },
         messages: {
             shouldUseOptionalDecorator: `Property marked as optional should use @IsOptional decorator and Field as nullable true`,
+            shouldSetFieldAsNullable: `Property marked as optional should use @Field as nullable true`,
             shouldUseRequiredDecorator: `Property marked as required should not use nullable decorators`,
         },
         schema: [],
@@ -122,6 +143,9 @@ const rule = createRule({
                     context.report({
                         node,
                         messageId: "shouldUseOptionalDecorator",
+                        fix: (fixer) => {
+                            fixer.insertTextAfter();
+                        },
                     });
                 }
                 if (shouldUseRequiredDecorator(node)) {
