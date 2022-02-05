@@ -10,5 +10,5 @@ export const createRule = ESLintUtils.RuleCreator(
     //         version as string
     //     }/packages/eslint-plugin/docs/rules/${name}.md`
     () =>
-        `https://github.com/darraghoriordan/eslint-plugin-nestjs-typed/blob/main/README.md`
+        `https://github.com/greugintow/eslint-plugin-nestjs-typed/blob/main/README.md`
 );
