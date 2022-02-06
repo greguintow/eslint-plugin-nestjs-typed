@@ -80,6 +80,24 @@ export const typedTokenHelpers = {
         }
         return didMatchExpectedValues;
     },
+    getPropertyWithValue(
+        firstArgument: TSESTree.ObjectExpression,
+        propertyName: string,
+        expectedValue: string | number | bigint | boolean | RegExp | null
+    ): TSESTree.Property | undefined {
+        let didMatchExpectedValues = false;
+        const foundPropertyOfName = firstArgument?.properties?.find(
+            (p) =>
+                ((p as TSESTree.Property).key as TSESTree.Identifier).name ===
+                propertyName
+        ) as TSESTree.Property | undefined;
+
+        didMatchExpectedValues =
+            !!foundPropertyOfName &&
+            (foundPropertyOfName.value as TSESTree.Literal).value ===
+                expectedValue;
+        return didMatchExpectedValues ? foundPropertyOfName : undefined;
+    },
     getConstrainedTypeAtLocation(
         checker: ts.TypeChecker,
         node: ts.Node
@@ -178,7 +196,9 @@ export const typedTokenHelpers = {
             (
                 node.typeAnnotation?.typeAnnotation as TSESTree.TSUnionType
             )?.types?.find(
-                (t) => t.type === AST_NODE_TYPES.TSUndefinedKeyword
+                (t) =>
+                    t.type === AST_NODE_TYPES.TSUndefinedKeyword ||
+                    t.type === AST_NODE_TYPES.TSNullKeyword
             ) !== undefined;
 
         const isOptionalPropertyValue =
