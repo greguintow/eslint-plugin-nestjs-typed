@@ -1,4 +1,5 @@
 import {RuleTester} from "@typescript-eslint/experimental-utils/dist/eslint-utils";
+import outdent from "outdent";
 import {getFixturesRootDirectory} from "../../testing/fixtureSetup";
 import rule from "./apiPropertyMatchesPropertyOptionality";
 
@@ -87,15 +88,25 @@ ruleTester.run("api-property-matches-property-optionality", rule, {
         },
         {
             name: "should add IsOptional decorator",
-            code: `class TestClass {
-                @Field({ nullable: true })
-                @IsString()
-                thisIsAStringProp?: string;}`,
-            output: `class TestClass {
-                @Field({ nullable: true })
-                @IsString()
-                @IsOptional()
-                thisIsAStringProp?: string;}`,
+            code: outdent`
+              import { IsString } from 'class-validator';
+
+              class TestClass {
+                  @Field({ nullable: true })
+                  @IsString()
+                  thisIsAStringProp?: string;
+              }
+            `,
+            output: outdent`
+              import { IsString, IsOptional } from 'class-validator';
+
+              class TestClass {
+                  @Field({ nullable: true })
+                  @IsString()
+                  @IsOptional()
+                  thisIsAStringProp?: string;
+              }
+            `,
             errors: [
                 {
                     messageId: "shouldAddIsOptional",

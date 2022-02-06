@@ -14,6 +14,7 @@ import {renameDecorator} from "../../utils/renameDecorator";
 import {appendDecorator} from "../../utils/appendDecorator";
 import {removeDecorator} from "../../utils/removeDecorator";
 import {removeProperty} from "../../utils/removeProperty";
+import {appendImport} from "../../utils/appendImport";
 
 const CLASS_VALIDATOR_DECORATOR_NAMES = new Set(
     Object.keys(classValidator as object)
@@ -236,7 +237,58 @@ export function shouldUseOptionalDecorator(
             node,
             messageId: "shouldAddIsOptional",
             fix(fixer) {
-                return appendDecorator(fixer, node, "@IsOptional()");
+                const fixes: RuleFix[] = [];
+                const lines = sourceCode.getLines();
+                const lastImport = lines
+                    .filter((line) => line.startsWith("import"))
+                    .pop();
+                if (lastImport) {
+                    const lastImportIndex = lines.indexOf(lastImport);
+                    let importDeclaration:
+                        | TSESTree.ImportDeclaration
+                        | undefined;
+                    lines.slice(0, lastImportIndex + 1).some((line, index) => {
+                        const importNode = sourceCode.getNodeByRangeIndex(
+                            sourceCode.getIndexFromLoc({
+                                line: index + 1,
+                                column: 0,
+                            })
+                        );
+                        if (!importNode) return false;
+                        const isImportDeclaration =
+                            importNode.type ===
+                            AST_NODE_TYPES.ImportDeclaration;
+                        if (!isImportDeclaration) return false;
+                        const isClassValidatorImport =
+                            importNode.source.value === "class-validator";
+                        if (isClassValidatorImport) {
+                            importDeclaration = importNode;
+                        }
+                        return isClassValidatorImport;
+                    });
+
+                    if (importDeclaration) {
+                        const hasIsOptionalImport =
+                            importDeclaration.specifiers.some(
+                                (specifier) =>
+                                    specifier.type ===
+                                        AST_NODE_TYPES.ImportSpecifier &&
+                                    specifier.imported.name === "IsOptional"
+                            );
+                        if (!hasIsOptionalImport) {
+                            fixes.push(
+                                appendImport(
+                                    fixer,
+                                    importDeclaration,
+                                    "IsOptional",
+                                    sourceCode
+                                )
+                            );
+                        }
+                    }
+                }
+                fixes.push(appendDecorator(fixer, node, "@IsOptional()"));
+                return fixes;
             },
         });
     }
