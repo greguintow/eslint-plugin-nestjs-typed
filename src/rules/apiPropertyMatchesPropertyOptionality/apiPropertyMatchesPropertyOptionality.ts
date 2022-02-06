@@ -9,13 +9,11 @@ import {
 } from "@typescript-eslint/experimental-utils/dist/ts-eslint";
 import {appendArgument} from "../../utils/appendArgument";
 import {replaceArgument} from "../../utils/replaceArgument";
-import {
-    getPropertiesOfObjectWithNoBrackets,
-    stripObject,
-} from "../../utils/parentheses";
+import {getPropertiesOfObjectWithNoBrackets} from "../../utils/parentheses";
 import {renameDecorator} from "../../utils/renameDecorator";
 import {appendDecorator} from "../../utils/appendDecorator";
 import {removeDecorator} from "../../utils/removeDecorator";
+import {removeProperty} from "../../utils/removeProperty";
 
 const CLASS_VALIDATOR_DECORATOR_NAMES = new Set(
     Object.keys(classValidator as object)
@@ -70,14 +68,11 @@ export const shouldUseRequiredDecorator = (
                         if (fieldArgument.properties.length === 1) {
                             return fixer.removeRange(fieldArgument.range);
                         }
-                        const argumentText = sourceCode.getText(fieldArgument);
-                        const text = sourceCode.getText(nullableProperty);
-                        const newArgumentText = argumentText.replace(text, "");
-                        return replaceArgument(
+                        return removeProperty(
                             fixer,
                             fieldArgument,
-                            `{ ${stripObject(newArgumentText)} }`,
-                            sourceCode
+                            sourceCode,
+                            "nullable"
                         );
                     },
                 });
