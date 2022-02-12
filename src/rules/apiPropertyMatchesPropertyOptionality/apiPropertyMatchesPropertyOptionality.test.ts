@@ -264,5 +264,33 @@ ruleTester.run("api-property-matches-property-optionality", rule, {
                 },
             ],
         },
+        {
+            name: "should remove required false if is required property",
+            code: `class TestClass {
+                @ApiProperty({ required: false })
+                thisIsAStringProp: string;}`,
+            output: `class TestClass {
+                @ApiProperty()
+                thisIsAStringProp: string;}`,
+            errors: [
+                {
+                    messageId: "shouldUseRequiredDecorator",
+                },
+            ],
+        },
+        {
+            name: "should remove required false and replace by ApiPropertyOptional",
+            code: `class TestClass {
+                @ApiProperty({ required: false })
+                thisIsAStringProp?: string;}`,
+            output: `class TestClass {
+                @ApiPropertyOptional()
+                thisIsAStringProp?: string;}`,
+            errors: [
+                {
+                    messageId: "shouldUseOptionalDecorator",
+                },
+            ],
+        },
     ],
 });

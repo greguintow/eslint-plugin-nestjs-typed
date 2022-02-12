@@ -43,11 +43,12 @@ export const shouldUseRequiredDecorator = (
 
     if (isOptionalPropertyValue) return;
 
-    const [field, apiPropertyOptional, isOptionalDecorator] =
+    const [field, apiPropertyOptional, isOptionalDecorator, apiProperty] =
         typedTokenHelpers.getDecoratorsNamedOrdered(node, [
             "Field",
             "ApiPropertyOptional",
             "IsOptional",
+            "ApiProperty",
         ]);
     if (field) {
         const fieldArgument = (
@@ -80,12 +81,47 @@ export const shouldUseRequiredDecorator = (
             }
         }
     }
-    if (apiPropertyOptional || isOptionalDecorator) {
+    let shouldRemoveRequiredFalse = false;
+    let apiPropertyArgument: TSESTree.ObjectExpression | undefined;
+    if (apiProperty) {
+        apiPropertyArgument = (
+            ((apiProperty.expression as TSESTree.CallExpression).arguments ||
+                []) as TSESTree.ObjectExpression[]
+        )[0];
+
+        if (apiPropertyArgument) {
+            shouldRemoveRequiredFalse =
+                typedTokenHelpers.getPropertyValueEqualsExpected(
+                    apiPropertyArgument,
+                    "required",
+                    false
+                );
+        }
+    }
+
+    if (
+        apiPropertyOptional ||
+        isOptionalDecorator ||
+        shouldRemoveRequiredFalse
+    ) {
         context.report({
             messageId: "shouldUseRequiredDecorator",
             node,
             fix(fixer) {
-                return [
+                const fixes = [
+                    isOptionalDecorator
+                        ? removeDecorator(fixer, isOptionalDecorator)
+                        : undefined,
+                    shouldRemoveRequiredFalse && apiPropertyArgument
+                        ? apiPropertyArgument.properties.length === 1
+                            ? fixer.removeRange(apiPropertyArgument.range)
+                            : (removeProperty(
+                                  fixer,
+                                  apiPropertyArgument,
+                                  sourceCode,
+                                  "required"
+                              ) as RuleFix)
+                        : undefined,
                     apiPropertyOptional
                         ? renameDecorator(
                               fixer,
@@ -93,10 +129,8 @@ export const shouldUseRequiredDecorator = (
                               "ApiProperty"
                           )
                         : undefined,
-                    isOptionalDecorator
-                        ? removeDecorator(fixer, isOptionalDecorator)
-                        : undefined,
-                ].filter(Boolean) as readonly RuleFix[];
+                ].filter(Boolean) as RuleFix[];
+                return fixes;
             },
         });
     }
@@ -297,11 +331,39 @@ export function shouldUseOptionalDecorator(
             node: apiProperty,
             messageId: "shouldUseOptionalDecorator",
             fix(fixer) {
-                return renameDecorator(
-                    fixer,
-                    apiProperty,
-                    "ApiPropertyOptional"
+                const [apiPropertyArgument] = ((
+                    apiProperty.expression as TSESTree.CallExpression
+                ).arguments || []) as TSESTree.ObjectExpression[];
+                const fixes: RuleFix[] = [];
+
+                if (apiPropertyArgument) {
+                    const hasRequiredFalse =
+                        typedTokenHelpers.getPropertyValueEqualsExpected(
+                            apiPropertyArgument,
+                            "required",
+                            false
+                        );
+                    if (hasRequiredFalse) {
+                        if (apiPropertyArgument.properties.length > 1) {
+                            fixes.push(
+                                removeProperty(
+                                    fixer,
+                                    apiPropertyArgument,
+                                    sourceCode,
+                                    "required"
+                                ) as RuleFix
+                            );
+                        } else {
+                            fixes.push(
+                                fixer.removeRange(apiPropertyArgument.range)
+                            );
+                        }
+                    }
+                }
+                fixes.push(
+                    renameDecorator(fixer, apiProperty, "ApiPropertyOptional")
                 );
+                return fixes;
             },
         });
     }
