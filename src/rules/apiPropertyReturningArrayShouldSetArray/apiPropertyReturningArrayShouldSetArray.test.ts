@@ -21,6 +21,12 @@ ruleTester.run("api-property-returning-array-should-set-array", rule, {
             thisIsAStringProp?: string[];}`,
         },
         {
+            code: `export class TestClass {
+            @Expose()
+            @ApiPropertyOptional({isArray:true})
+            thisIsAStringProp?: [string];}`,
+        },
+        {
             code: `class TestClass {
                 @Expose()
                 @ApiPropertyOptional({isArray:true})
