@@ -31,7 +31,10 @@ export const shouldSetArrayProperty = (
         (
             (node.typeAnnotation?.typeAnnotation as TSESTree.TSTypeReference)
                 .typeName as TSESTree.Identifier
-        )?.name === "Array";
+        )?.name === "Array" ||
+        (node.typeAnnotation?.typeAnnotation as TSESTree.Node).type ===
+            AST_NODE_TYPES.TSTupleType;
+
     const isTypescriptArrayType =
         node.typeAnnotation?.typeAnnotation.type === AST_NODE_TYPES.TSArrayType;
     const isAnArrayLikeType = isArrayType || isTypescriptArrayType;

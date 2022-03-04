@@ -65,20 +65,46 @@ export const typedTokenHelpers = {
     ): boolean {
         let didMatchExpectedValues = false;
         if (firstArgument !== undefined) {
-            const foundPropertyOfName = firstArgument?.properties?.find(
-                (p) =>
-                    ((p as TSESTree.Property).key as TSESTree.Identifier)
-                        .name === propertyName
+            const foundPropertyOfName = this.getPropertyWithName(
+                firstArgument,
+                propertyName
             );
 
             didMatchExpectedValues =
                 foundPropertyOfName !== undefined &&
-                (
-                    (foundPropertyOfName as TSESTree.Property)
-                        .value as TSESTree.Literal
-                ).value === expectedValue;
+                (foundPropertyOfName.value as TSESTree.Literal).value ===
+                    expectedValue;
         }
         return didMatchExpectedValues;
+    },
+    getPropertyWithValue(
+        firstArgument: TSESTree.ObjectExpression,
+        propertyName: string,
+        expectedValue: string | number | bigint | boolean | RegExp | null
+    ): TSESTree.Property | undefined {
+        let didMatchExpectedValues = false;
+        const foundPropertyOfName = this.getPropertyWithName(
+            firstArgument,
+            propertyName
+        );
+
+        didMatchExpectedValues =
+            !!foundPropertyOfName &&
+            (foundPropertyOfName.value as TSESTree.Literal).value ===
+                expectedValue;
+        return didMatchExpectedValues ? foundPropertyOfName : undefined;
+    },
+    getPropertyWithName(
+        objectExpression: TSESTree.ObjectExpression,
+        propertyName: string
+    ): TSESTree.Property | undefined {
+        const foundPropertyOfName = objectExpression?.properties?.find(
+            (p) =>
+                ((p as TSESTree.Property).key as TSESTree.Identifier).name ===
+                propertyName
+        ) as TSESTree.Property | undefined;
+
+        return foundPropertyOfName;
     },
     getConstrainedTypeAtLocation(
         checker: ts.TypeChecker,
@@ -178,7 +204,9 @@ export const typedTokenHelpers = {
             (
                 node.typeAnnotation?.typeAnnotation as TSESTree.TSUnionType
             )?.types?.find(
-                (t) => t.type === AST_NODE_TYPES.TSUndefinedKeyword
+                (t) =>
+                    t.type === AST_NODE_TYPES.TSUndefinedKeyword ||
+                    t.type === AST_NODE_TYPES.TSNullKeyword
             ) !== undefined;
 
         const isOptionalPropertyValue =
