@@ -22,20 +22,25 @@ const CLASS_VALIDATOR_DECORATOR_NAMES = new Set(
 
 CLASS_VALIDATOR_DECORATOR_NAMES.delete("IsOptional");
 
-type Context = Readonly<
-    RuleContext<
-        | "shouldUseOptionalDecorator"
-        | "shouldUseRequiredDecorator"
-        | "shouldAddIsOptional"
-        | "shouldRemoveNullableFromField"
-        | "shouldSetFieldAsNullable",
-        never[]
-    >
->;
+type MessageIds =
+    | "shouldUseOptionalDecorator"
+    | "shouldUseRequiredDecorator"
+    | "shouldAddIsOptional"
+    | "shouldRemoveNullableFromField"
+    | "shouldSetFieldAsNullable";
+
+type RuleOptions = [
+    {
+        shouldDisableField: boolean;
+    }
+];
+
+type Context = Readonly<RuleContext<MessageIds, RuleOptions>>;
 
 export const shouldUseRequiredDecorator = (
     node: TSESTree.PropertyDefinition,
-    context: Context
+    context: Context,
+    disableField?: boolean
 ) => {
     const sourceCode = context.getSourceCode();
     const isOptionalPropertyValue =
@@ -50,7 +55,7 @@ export const shouldUseRequiredDecorator = (
             "IsOptional",
             "ApiProperty",
         ]);
-    if (field) {
+    if (field && !disableField) {
         const fieldArgument = (
             field.expression as TSESTree.CallExpression
         ).arguments.find(
@@ -138,7 +143,8 @@ export const shouldUseRequiredDecorator = (
 
 export function shouldUseOptionalDecorator(
     node: TSESTree.PropertyDefinition,
-    context: Context
+    context: Context,
+    disableField?: boolean
 ) {
     const sourceCode = context.getSourceCode();
     const isOptionalPropertyValue =
@@ -152,7 +158,7 @@ export function shouldUseOptionalDecorator(
             "ApiProperty",
         ]);
     let isSetAsRequired = false;
-    if (field) {
+    if (field && !disableField) {
         const fieldArguments = (field.expression as TSESTree.CallExpression)
             .arguments as TSESTree.ObjectExpression[];
         let hasNullable = false;
@@ -369,7 +375,7 @@ export function shouldUseOptionalDecorator(
     }
 }
 
-const rule = createRule({
+const rule = createRule<RuleOptions, MessageIds>({
     name: "api-property-matches-property-optionality",
     meta: {
         docs: {
@@ -384,19 +390,30 @@ const rule = createRule({
             shouldUseRequiredDecorator: `Property marked as required should not use nullable decorators`,
             shouldRemoveNullableFromField: `Property marked as required should not use @Field with nullable true`,
         },
-        schema: [],
+        schema: [
+            {
+                properties: {
+                    shouldDisableField: {
+                        description: "boolean to not check the Field decorator",
+                        type: "boolean",
+                    },
+                },
+            },
+        ],
         hasSuggestions: false,
         fixable: "code",
         type: "suggestion",
     },
-    defaultOptions: [],
+    defaultOptions: [{shouldDisableField: false}],
 
     create(context) {
+        const {shouldDisableField = false} = context.options[0] || {};
+
         return {
             // eslint-disable-next-line @typescript-eslint/naming-convention
             PropertyDefinition(node: TSESTree.PropertyDefinition): void {
-                shouldUseOptionalDecorator(node, context);
-                shouldUseRequiredDecorator(node, context);
+                shouldUseOptionalDecorator(node, context, shouldDisableField);
+                shouldUseRequiredDecorator(node, context, shouldDisableField);
             },
         };
     },

@@ -42,6 +42,16 @@ ruleTester.run("api-property-matches-property-optionality", rule, {
                 @Field()
                 thisIsAStringProp: string;}`,
         },
+        {
+            code: `class TestClass {
+                @Field({ nullable: true })
+                thisIsAStringProp: string;}`,
+            options: [
+                {
+                    shouldDisableField: true,
+                },
+            ],
+        },
     ],
     invalid: [
         {
