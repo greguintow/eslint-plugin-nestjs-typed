@@ -8,7 +8,6 @@ const rule = createRule({
         docs: {
             description:
                 "Disallow Logger or console in return statements and auto-fix by moving return to the next line",
-            recommended: false,
             requiresTypeChecking: false,
         },
         messages: {

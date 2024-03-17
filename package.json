@@ -5,7 +5,7 @@
     "scripts": {
         "clean": "rimraf dist",
         "build:ci": "npm run build",
-        "build": "npm run clean && mkdir ./dist && tsc --project tsconfig.build.json",
+        "build": "npm run clean && tsc --project tsconfig.build.json",
         "lint": "npx eslint -c .eslintrc.js --ext .ts src --no-error-on-unmatched-pattern --no-ignore",
         "test": "npx jest --runInBand --colors --reporters=default --no-cache --coverage=false --silent=false -c jest.config.ts",
         "pre-commit": "npx lint-staged",

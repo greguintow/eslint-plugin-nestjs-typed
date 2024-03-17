@@ -1,5 +1,9 @@
 import {TSESTree} from "@typescript-eslint/utils";
-import {isParenthesized} from "@typescript-eslint/utils/ast-utils";
+import {
+    isClosingParenToken,
+    isOpeningParenToken,
+    isParenthesized,
+} from "@typescript-eslint/utils/ast-utils";
 import {SourceCode} from "@typescript-eslint/utils/ts-eslint";
 
 function getParenthesizedTimes(

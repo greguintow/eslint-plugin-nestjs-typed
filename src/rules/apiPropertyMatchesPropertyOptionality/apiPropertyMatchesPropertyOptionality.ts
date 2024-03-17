@@ -390,6 +390,7 @@ const rule = createRule<RuleOptions, MessageIds>({
                 properties: {
                     shouldDisableField: {
                         description: "boolean to not check the Field decorator",
+                        // @ts-expect-error - this is a valid schema
                         type: "boolean",
                     },
                 },
