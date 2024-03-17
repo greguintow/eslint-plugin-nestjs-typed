@@ -1,9 +1,6 @@
-import {TSESTree} from "@typescript-eslint/experimental-utils";
-import {isCommaToken} from "@typescript-eslint/experimental-utils/dist/ast-utils";
-import {
-    RuleFixer,
-    SourceCode,
-} from "@typescript-eslint/experimental-utils/dist/ts-eslint";
+import {TSESTree} from "@typescript-eslint/utils";
+import {isCommaToken} from "@typescript-eslint/utils/ast-utils";
+import {RuleFixer, SourceCode} from "@typescript-eslint/utils/ts-eslint";
 import {typedTokenHelpers} from "./typedTokenHelpers";
 
 export function removeProperty(

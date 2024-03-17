@@ -1,12 +1,8 @@
-import {TSESTree} from "@typescript-eslint/types";
-import {AST_NODE_TYPES} from "@typescript-eslint/experimental-utils";
+import {TSESTree, AST_NODE_TYPES} from "@typescript-eslint/utils";
 import {createRule} from "../../utils/createRule";
+import {RuleContext, RuleFix} from "@typescript-eslint/utils/ts-eslint";
 import {typedTokenHelpers} from "../../utils/typedTokenHelpers";
 import * as classValidator from "class-validator";
-import {
-    RuleContext,
-    RuleFix,
-} from "@typescript-eslint/experimental-utils/dist/ts-eslint";
 import {appendArgument} from "../../utils/appendArgument";
 import {replaceArgument} from "../../utils/replaceArgument";
 import {getPropertiesOfObjectWithNoBrackets} from "../../utils/parentheses";
@@ -32,7 +28,7 @@ type MessageIds =
 type RuleOptions = [
     {
         shouldDisableField: boolean;
-    }
+    },
 ];
 
 type Context = Readonly<RuleContext<MessageIds, RuleOptions>>;
@@ -120,12 +116,12 @@ export const shouldUseRequiredDecorator = (
                     shouldRemoveRequiredFalse && apiPropertyArgument
                         ? apiPropertyArgument.properties.length === 1
                             ? fixer.removeRange(apiPropertyArgument.range)
-                            : (removeProperty(
+                            : removeProperty(
                                   fixer,
                                   apiPropertyArgument,
                                   sourceCode,
                                   "required"
-                              ) as RuleFix)
+                              )!
                         : undefined,
                     apiPropertyOptional
                         ? renameDecorator(
@@ -357,7 +353,7 @@ export function shouldUseOptionalDecorator(
                                     apiPropertyArgument,
                                     sourceCode,
                                     "required"
-                                ) as RuleFix
+                                )!
                             );
                         } else {
                             fixes.push(
@@ -380,7 +376,6 @@ const rule = createRule<RuleOptions, MessageIds>({
     meta: {
         docs: {
             description: "Properties should have correct nullable decorators",
-            recommended: false,
             requiresTypeChecking: false,
         },
         messages: {

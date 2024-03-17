@@ -1,4 +1,4 @@
-import {RuleTester} from "@typescript-eslint/experimental-utils/dist/eslint-utils";
+import {RuleTester} from "@typescript-eslint/rule-tester";
 import outdent from "outdent";
 import {getFixturesRootDirectory} from "../../testing/fixtureSetup";
 import rule from "./apiPropertyMatchesPropertyOptionality";

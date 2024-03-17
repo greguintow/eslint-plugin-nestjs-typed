@@ -1,4 +1,4 @@
-import {RuleTester} from "@typescript-eslint/experimental-utils/dist/eslint-utils";
+import {RuleTester} from "@typescript-eslint/rule-tester";
 import {getFixturesRootDirectory} from "../../testing/fixtureSetup";
 import rule from "./shouldSpecifyForbidUnknownValuesRule";
 
@@ -39,6 +39,24 @@ ruleTester.run("validation-pipe-should-use-forbid-unknown", rule, {
             } as ThisIsNotAValidationPipeOptionsClass;
     
             const validationPipeA = new ValidationPipe(options);
+    
+            const validationPipeB = new ValidationPipe({
+                transform: true,
+                skipMissingProperties: false,
+                whitelist: true,
+                forbidNonWhitelisted: true,
+                forbidUnknownValues: true,
+            });   
+    `,
+        },
+        {
+            // ignore spread options for validation pipe
+            code: `
+            const options = {
+                forbidNonWhitelisted: true,
+            } as ThisIsNotAValidationPipeOptionsClass;
+    
+            const validationPipeA = new ValidationPipe({...options});
     
             const validationPipeB = new ValidationPipe({
                 transform: true,

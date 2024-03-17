@@ -1,5 +1,5 @@
-import {TSESTree} from "@typescript-eslint/experimental-utils";
-import {RuleFixer} from "@typescript-eslint/experimental-utils/dist/ts-eslint";
+import {TSESTree} from "@typescript-eslint/utils";
+import {RuleFixer} from "@typescript-eslint/utils/ts-eslint";
 
 export function renameDecorator(
     fixer: RuleFixer,

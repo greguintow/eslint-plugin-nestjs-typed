@@ -1,4 +1,4 @@
-import {RuleTester} from "@typescript-eslint/experimental-utils/dist/eslint-utils";
+import {RuleTester} from "@typescript-eslint/rule-tester";
 import {getFixturesRootDirectory} from "../../testing/fixtureSetup";
 import rule from "./ProviderInjectedShouldMatchFactory";
 
@@ -54,6 +54,29 @@ ruleTester.run("provided-injected-should-match-factory-parameters", rule, {
                 return new MyOtherInjectable()
             }
         };`,
+        },
+        {
+            // should not fail on this code, unrelated to provider injection
+            code: `searchProvidersReturn = (providers: IdeonProvider[]) => {
+                return providers.map((provider) => {
+                  const entity: Provider = { // THIS LINE
+                    id: provider.id,
+                    firstName: provider.first_name,
+                    middleName: provider.middle_name,
+                    lastName: provider.last_name,
+                    suffix: provider.suffix,
+                    title: provider.title,
+                    presentationName: provider.presentation_name,
+                    gender: provider.gender,
+                    npis: provider.npis,
+                    phone: provider.phone,
+                    email: provider.email,
+                    specialty: provider.specialty,
+                    addresses: provider.addresses,
+                  };
+                  return entity;
+                });
+              };`,
         },
     ],
     invalid: [

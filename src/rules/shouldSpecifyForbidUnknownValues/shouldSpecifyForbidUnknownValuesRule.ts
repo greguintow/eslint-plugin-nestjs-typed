@@ -1,6 +1,6 @@
-import {VariableDeclarator} from "@babel/types";
-import {TSESTree} from "@typescript-eslint/types";
+import {TSESTree} from "@typescript-eslint/utils";
 import {createRule} from "../../utils/createRule";
+import {ASTUtils} from "@typescript-eslint/utils";
 
 export const isValidationPipeNewExpression = (node: TSESTree.Node): boolean => {
     const newExpression = node as TSESTree.NewExpression;
@@ -16,11 +16,12 @@ export const checkObjectExpression = (
     if (!os) {
         return false;
     }
-    const forbidUnknownValuesProperty = os?.properties?.find(
-        (p) =>
-            ((p as TSESTree.Property).key as TSESTree.Identifier).name ===
-            "forbidUnknownValues"
-    ) as TSESTree.Property;
+    // eslint-disable-next-line @typescript-eslint/non-nullable-type-assertion-style
+    const forbidUnknownValuesProperty = os?.properties
+        ?.filter(ASTUtils.isNodeOfType(TSESTree.AST_NODE_TYPES.Property))
+        .find(
+            (p) => (p.key as TSESTree.Identifier).name === "forbidUnknownValues"
+        ) as TSESTree.Property;
     // property is not present. this is wrong.
     if (os && !forbidUnknownValuesProperty) {
         return true;
@@ -46,9 +47,14 @@ export const shouldTriggerNewExpressionHasProperty = (
     const newExpression = node as TSESTree.NewExpression;
     // the default new ValidationPipe() seems to prevent the attack so we ignore calls with no parameters
     // we also ignore parameters that are not explicit object expressions
+    // or if the properties are spread
     if (
         newExpression.arguments?.length === 0 ||
-        newExpression.arguments[0].type !== "ObjectExpression"
+        newExpression.arguments[0].type !==
+            TSESTree.AST_NODE_TYPES.ObjectExpression ||
+        newExpression.arguments[0].properties.some(
+            ASTUtils.isNodeOfType(TSESTree.AST_NODE_TYPES.SpreadElement)
+        )
     ) {
         return false;
     }
@@ -57,11 +63,11 @@ export const shouldTriggerNewExpressionHasProperty = (
     return checkObjectExpression(argument);
 };
 
-export const shouldTriggerForVariableDecleratorExpression = (
-    node: TSESTree.Node
+export const shouldTriggerForVariableDeclaratorExpression = (
+    node: TSESTree.VariableDeclarator
 ): boolean => {
     // if the developer hasn't annotated the object we can't continue to check these rules correctly (we don't know if anonymous objects need to have any props)
-    const variableDeclarator = node as VariableDeclarator;
+    const variableDeclarator = node;
     const asExpression = variableDeclarator?.init as TSESTree.TSAsExpression;
     const typeAnnotation =
         asExpression?.typeAnnotation as TSESTree.TSTypeReference;
@@ -75,13 +81,13 @@ export const shouldTriggerForVariableDecleratorExpression = (
     );
 };
 
-const rule = createRule({
+const rule = createRule<[], "shouldSpecifyForbidUnknownValues">({
     name: "validation-pipe-should-use-forbid-unknown",
     meta: {
         docs: {
             description:
                 "ValidationPipe should use forbidUnknownValues: true to prevent attacks. See https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-18413",
-            recommended: false,
+
             requiresTypeChecking: false,
         },
         messages: {
@@ -96,7 +102,7 @@ const rule = createRule({
     create(context) {
         return {
             // eslint-disable-next-line @typescript-eslint/naming-convention
-            NewExpression(node: TSESTree.Node): void {
+            NewExpression(node: TSESTree.NewExpression): void {
                 // eslint-disable-next-line @typescript-eslint/naming-convention
                 const result = shouldTriggerNewExpressionHasProperty(node);
 
@@ -108,10 +114,10 @@ const rule = createRule({
                 }
             },
             // eslint-disable-next-line @typescript-eslint/naming-convention
-            VariableDeclarator(node: TSESTree.Node): void {
+            VariableDeclarator(node: TSESTree.VariableDeclarator): void {
                 // eslint-disable-next-line @typescript-eslint/naming-convention
                 const result =
-                    shouldTriggerForVariableDecleratorExpression(node);
+                    shouldTriggerForVariableDeclaratorExpression(node);
 
                 if (result) {
                     context.report({

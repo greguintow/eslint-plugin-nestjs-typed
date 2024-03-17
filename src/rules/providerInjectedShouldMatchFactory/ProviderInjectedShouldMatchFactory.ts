@@ -1,4 +1,4 @@
-import {TSESTree} from "@typescript-eslint/experimental-utils";
+import {TSESTree} from "@typescript-eslint/utils";
 import {createRule} from "../../utils/createRule";
 // eslint-disable-next-line unicorn/import-style
 //import util from "util";
@@ -8,6 +8,7 @@ export const hasMismatchedInjected = (
     node: TSESTree.VariableDeclarator
 ): boolean => {
     // should be a nest provider - note this doesn't check the Provider used is an import actually from nest. Assumes nest Provider. Will change if this is annoying:)
+    // edit 03/06/2023 - it was annoying and someone complained on github so I added a check for a "useFactory" property on the Provider declaration
     const isNestProvider =
         (
             (
@@ -16,7 +17,9 @@ export const hasMismatchedInjected = (
       // prettier-ignore
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
         )?.typeName as TSESTree.Identifier
-        )?.name === "Provider";
+        )?.name === "Provider" &&
+        // and there is a useFactory property in the declaration
+        nestProviderAstParser.findProvideProperty(node, "useFactory");
 
     if (!isNestProvider) {
         return false;
@@ -24,16 +27,15 @@ export const hasMismatchedInjected = (
 
     // count number of factory params
     const factoryParameterCount = (
-        nestProviderAstParser.findNestProviderObjectsProperty(
-            node,
-            "useFactory"
-        )?.value as TSESTree.ArrowFunctionExpression
-    ).params?.length;
+        nestProviderAstParser.findProvideProperty(node, "useFactory")
+            ?.value as TSESTree.ArrowFunctionExpression
+    )?.params?.length;
 
     // Count number of injected params
-    const injectedParameter =
-        nestProviderAstParser.findNestProviderObjectsProperty(node, "inject")
-            ?.value as unknown as TSESTree.ArrayExpression;
+    const injectedParameter = nestProviderAstParser.findProvideProperty(
+        node,
+        "inject"
+    )?.value as unknown as TSESTree.ArrayExpression;
 
     const injectedParameterCount = injectedParameter
         ? injectedParameter.elements.length
@@ -43,13 +45,13 @@ export const hasMismatchedInjected = (
     return injectedParameterCount !== factoryParameterCount;
 };
 
-const rule = createRule({
+const rule = createRule<[], "mainMessage">({
     name: "provided-injected-should-match-factory-parameters",
     meta: {
         docs: {
             description:
                 "The injected items in a provider should typically match the parameters to the factory method used",
-            recommended: false,
+
             requiresTypeChecking: false,
         },
         messages: {

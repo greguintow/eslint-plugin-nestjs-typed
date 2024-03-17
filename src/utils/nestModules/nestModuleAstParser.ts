@@ -1,4 +1,4 @@
-import {AST_NODE_TYPES, TSESTree} from "@typescript-eslint/experimental-utils";
+import {AST_NODE_TYPES, TSESTree} from "@typescript-eslint/utils";
 import {NestProvidedInjectablesMap} from "./models/NestProvidedInjectablesMap";
 
 export const nestModuleAstParser = {
@@ -29,14 +29,14 @@ export const nestModuleAstParser = {
     mapNestModuleDecorator(
         n: TSESTree.ClassDeclaration,
         path: string
-    ): Array<string | NestProvidedInjectablesMap> | null {
+    ): (string | NestProvidedInjectablesMap)[] | null {
         // The nest module decorator is called "Module"
         const moduleDecorator = n.decorators?.find(
             (d) =>
                 (
                     (d.expression as TSESTree.CallExpression)
                         .callee as TSESTree.Identifier
-                ).name === "Module"
+                )?.name === "Module"
         );
         if (moduleDecorator) {
             const mappedControllerElements =
@@ -77,11 +77,18 @@ export const nestModuleAstParser = {
         );
 
         if (optionProperty) {
-            return new Set(
+            // a property can be an array expression e.g. myProp = []
+            // or a variable e.g. myProp = someArray
+            // - this only supports array expressions for now!
+
+            const propertyAsArrayExpressionElements =
                 (
                     (optionProperty as unknown as TSESTree.Property)
                         .value as TSESTree.ArrayExpression
-                ).elements.map(
+                )?.elements || [];
+
+            return new Set(
+                propertyAsArrayExpressionElements.map(
                     (element) => (element as TSESTree.Identifier).name
                 )
             );

@@ -1,9 +1,6 @@
-import {TSESTree} from "@typescript-eslint/experimental-utils";
-import {isCommaToken} from "@typescript-eslint/experimental-utils/dist/ast-utils";
-import {
-    RuleFixer,
-    SourceCode,
-} from "@typescript-eslint/experimental-utils/dist/ts-eslint";
+import {TSESTree} from "@typescript-eslint/utils";
+import {isCommaToken} from "@typescript-eslint/utils/ast-utils";
+import {RuleFixer, SourceCode} from "@typescript-eslint/utils/ts-eslint";
 
 export function appendImport(
     fixer: RuleFixer,
@@ -11,8 +8,8 @@ export function appendImport(
     text: string,
     sourceCode: Readonly<SourceCode>
 ) {
-    const lastSpecifier = node.specifiers[node.specifiers.length - 1];
-    const [lastToken] = sourceCode.getLastTokens(lastSpecifier, 1);
+    const lastSpecifier = node.specifiers.at(-1);
+    const [lastToken] = sourceCode.getLastTokens(lastSpecifier!, 1);
     text = isCommaToken(lastToken) ? ` ${text},` : `, ${text}`;
     return fixer.insertTextAfter(lastToken || lastSpecifier, text);
 }

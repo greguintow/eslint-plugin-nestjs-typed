@@ -1,11 +1,18 @@
-module.exports = {
-    cacheDirectory: __dirname + "/.jest_cache",
+import type {Config} from "@jest/types";
+
+const config: Config.InitialOptions = {
+    // eslint-disable-next-line unicorn/prefer-module
+    cacheDirectory: `${__dirname}/.jest_cache`,
     roots: ["<rootDir>/src"],
     preset: "ts-jest",
     testRegex: "(.*.(test|spec)).(jsx?|tsx?|ts?)$",
     moduleFileExtensions: ["ts", "js", "json"],
     setupFiles: ["./src/testing/preRun.ts"],
     collectCoverage: true,
+    transform: {
+        "^.+\\.(tsx?|ts?)$": ["ts-jest", {tsconfig: `tsconfig.test.json`}],
+    },
+
     silent: false,
     verbose: true,
     collectCoverageFrom: [
@@ -35,3 +42,5 @@ module.exports = {
     ],
     coverageReporters: ["json", "lcov", "text", "clover", "cobertura"],
 };
+
+export default config;

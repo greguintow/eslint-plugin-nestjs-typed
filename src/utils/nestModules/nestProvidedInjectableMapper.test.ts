@@ -1,4 +1,4 @@
-import {TSESTree} from "@typescript-eslint/experimental-utils";
+import {TSESTree} from "@typescript-eslint/utils";
 import {EcmaVersion, ParserOptions} from "@typescript-eslint/types";
 import {typedTokenHelpers} from "../typedTokenHelpers";
 import {NestProvidedInjectablesMap} from "./models/NestProvidedInjectablesMap";
@@ -30,11 +30,14 @@ describe("nest module ast mapper", () => {
 
         expect(result).not.toBeUndefined();
         expect(
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
             (
                 (typeAnnotation?.typeAnnotation as TSESTree.TSTypeReference)
                 // prettier-ignore
                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     .typeName as any
+            // prettier-ignore
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
             ).name
         ).toEqual("Date");
     });
@@ -42,7 +45,7 @@ describe("nest module ast mapper", () => {
         "Can parse a module",
         (testItem: {
             moduleCode: string;
-            expectedMapping: Array<string | NestProvidedInjectablesMap>;
+            expectedMapping: (string | NestProvidedInjectablesMap)[];
         }) => {
             const ast = typedTokenHelpers.parseStringToAst(
                 testItem.moduleCode,

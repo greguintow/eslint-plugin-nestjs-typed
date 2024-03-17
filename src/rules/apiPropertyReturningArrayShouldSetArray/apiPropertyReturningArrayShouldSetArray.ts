@@ -1,4 +1,4 @@
-import {AST_NODE_TYPES, TSESTree} from "@typescript-eslint/types";
+import {AST_NODE_TYPES, TSESTree} from "@typescript-eslint/utils";
 import {createRule} from "../../utils/createRule";
 import {typedTokenHelpers} from "../../utils/typedTokenHelpers";
 import ArraySetResultModel from "./arraySetResultModel";
@@ -18,7 +18,20 @@ export const shouldSetArrayProperty = (
     // There should only be one of these apiproperty decorators so we just grab the parameter to decorator at index 0
     const firstArgumentToDecorator = (
         decorators[0].expression as TSESTree.CallExpression
-    ).arguments[0] as TSESTree.ObjectExpression;
+    ).arguments[0];
+
+    // if the code is using anything other than object expression, ignore the rule (we dont want to go looking at objects)
+    // we DO want to alert if there is no argument at all. so we continue to test the rule if no argument was passed
+    if (
+        firstArgumentToDecorator &&
+        (firstArgumentToDecorator.type !== AST_NODE_TYPES.ObjectExpression ||
+            // if the things passed to the object expression contains a spread then ignore that too!
+            firstArgumentToDecorator.properties.some(
+                (x) => x.type === AST_NODE_TYPES.SpreadElement
+            ))
+    ) {
+        return new ArraySetResultModel(false, false);
+    }
 
     const hasIsArraySetInOptions =
         typedTokenHelpers.getPropertyValueEqualsExpected(
@@ -26,17 +39,18 @@ export const shouldSetArrayProperty = (
             "isArray",
             true
         );
+
+    const typeAnnotation = node.typeAnnotation?.typeAnnotation;
     // handle string[] or Array<string>
     const isArrayType =
         (
-            (node.typeAnnotation?.typeAnnotation as TSESTree.TSTypeReference)
+            (typeAnnotation as TSESTree.TSTypeReference)
                 .typeName as TSESTree.Identifier
         )?.name === "Array" ||
-        (node.typeAnnotation?.typeAnnotation as TSESTree.Node).type ===
-            AST_NODE_TYPES.TSTupleType;
+        (typeAnnotation as TSESTree.Node).type === AST_NODE_TYPES.TSTupleType;
 
     const isTypescriptArrayType =
-        node.typeAnnotation?.typeAnnotation.type === AST_NODE_TYPES.TSArrayType;
+        typeAnnotation?.type === AST_NODE_TYPES.TSArrayType;
     const isAnArrayLikeType = isArrayType || isTypescriptArrayType;
 
     return new ArraySetResultModel(
@@ -45,12 +59,15 @@ export const shouldSetArrayProperty = (
     );
 };
 
-const rule = createRule({
+const rule = createRule<
+    [],
+    "shouldSetArrayPropertyTrue" | "shouldSetArrayPropertyFalse"
+>({
     name: "api-property-returning-array-should-set-array",
     meta: {
         docs: {
             description: "Properties of array should set array",
-            recommended: false,
+
             requiresTypeChecking: false,
         },
         messages: {

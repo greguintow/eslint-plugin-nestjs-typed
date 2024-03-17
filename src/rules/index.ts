@@ -7,20 +7,29 @@ import apiEnumPropertyBestPractices from "./apiEnumPropertyBestPractices/apiEnum
 import apiPropertyReturningArrayShouldSetArray from "./apiPropertyReturningArrayShouldSetArray/apiPropertyReturningArrayShouldSetArray";
 import shouldSpecifyForbidUnknownValues from "./shouldSpecifyForbidUnknownValues/shouldSpecifyForbidUnknownValuesRule";
 import parameterDecoratorNameMatchesRouteParam from "./paramDecoratorNameMatchesRouteParam/paramDecoratorNameMatchesRouteParam";
-import validateNonPrimitiveNeedsDecorators from "./validate-non-primitves-needs-type-decorator/validateNonPrimitiveNeedsDecorators";
+import validateNonPrimitiveNeedsDecorators from "./validateNonPrimitiveNeedsTypeDecorator/validateNonPrimitiveNeedsDecorators";
 import validateNestedOfArrayShouldSetEach from "./validateNestedOfArrayShouldSetEach/validateNestedOfArrayShouldSetEach";
 import allPropertiesAreWhitelisted from "./allPropertiesAreWhitelisted/allPropertiesAreWhitelisted";
 import noReturnLogger from "./noReturnLogger/noReturnLogger";
+import allPropertiesHaveExplicitDefined from "./allPropertiesHaveExplicitDefined/allPropertiesHaveExplicitDefined";
+import apiMethodsShouldBeGuarded from "./apiMethodsShouldBeGuarded/apiMethodsShouldBeGuarded";
+import apiMethodsShouldSpecifyApiOperation from "./apiMethodsShouldSpecifyApiOperation/apiMethodsShouldSpecifyApiOperation";
+import sortModuleMetadataArrays from "./sortModuleMetadataArrays/sortModuleMetadataArrays";
+import noDuplicateDecorators from "./noDuplicateDecorators/noDuplicateDecorators";
 
 const allRules = {
+    "all-properties-have-explicit-defined": allPropertiesHaveExplicitDefined,
     "api-property-matches-property-optionality":
         apiPropertyMatchesPropertyOptionality,
     "injectable-should-be-provided": injectableShouldBeProvided,
+    "no-duplicate-decorators": noDuplicateDecorators,
     "provided-injected-should-match-factory-parameters":
         providedInjectedShouldMatchFactoryParameters,
     "controllers-should-supply-api-tags": controllerDecoratedHasApiTags,
     "api-method-should-specify-api-response":
         apiMethodsShouldSpecifyApiResponse,
+    "api-method-should-specify-api-operation":
+        apiMethodsShouldSpecifyApiOperation,
     "api-enum-property-best-practices": apiEnumPropertyBestPractices,
     "api-property-returning-array-should-set-array":
         apiPropertyReturningArrayShouldSetArray,
@@ -33,6 +42,8 @@ const allRules = {
         validateNestedOfArrayShouldSetEach,
     "all-properties-are-whitelisted": allPropertiesAreWhitelisted,
     "no-return-logger": noReturnLogger,
+    "api-methods-should-be-guarded": apiMethodsShouldBeGuarded,
+    "sort-module-metadata-arrays": sortModuleMetadataArrays,
 };
 
 export default allRules;

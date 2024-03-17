@@ -1,16 +1,16 @@
 {
     "name": "@greguintow/eslint-plugin-nestjs-typed",
-    "version": "1.3.2",
+    "version": "2.0.0",
     "description": "Eslint rules for nestjs projects",
     "scripts": {
         "clean": "rimraf dist",
         "build:ci": "npm run build",
-        "build": "npm run clean && tsc --project tsconfig.build.json",
-        "lint": "npx eslint -c .eslintrc.js --ext .ts './src/**/*.ts' './tests/**/*.ts' --no-error-on-unmatched-pattern",
-        "test": "npx jest --runInBand --color --reporters=default --no-cache --coverage=false --silent=false",
+        "build": "npm run clean && mkdir ./dist && tsc --project tsconfig.build.json",
+        "lint": "npx eslint -c .eslintrc.js --ext .ts src --no-error-on-unmatched-pattern --no-ignore",
+        "test": "npx jest --runInBand --colors --reporters=default --no-cache --coverage=false --silent=false -c jest.config.ts",
         "pre-commit": "npx lint-staged",
         "prettier": "prettier --write src/*",
-        "prepare": "husky install",
+        "prepare": "husky",
         "release": "npx semantic-release",
         "semantic-release": "semantic-release"
     },
@@ -25,7 +25,7 @@
         "url": "https://github.com/greguintow/eslint-plugin-nestjs-typed"
     },
     "engines": {
-        "node": ">=12"
+        "node": "^18.18.0 || >=20.0.0"
     },
     "files": [
         "dist",
@@ -40,44 +40,44 @@
     "main": "dist/index.js",
     "types": "index.d.ts",
     "dependencies": {
-        "@typescript-eslint/experimental-utils": "5.5.0",
-        "@typescript-eslint/scope-manager": "5.5.0",
-        "eslint-module-utils": "2.7.1",
-        "reflect-metadata": "0.1.13"
+        "@typescript-eslint/scope-manager": "7.2.0",
+        "@typescript-eslint/utils": "7.2.0",
+        "eslint-module-utils": "2.8.0",
+        "reflect-metadata": "0.2.1"
     },
     "devDependencies": {
-        "@commitlint/cli": "^18.2.0",
-        "@commitlint/config-conventional": "15.0.0",
-        "@semantic-release/changelog": "6.0.1",
-        "@semantic-release/exec": "6.0.2",
-        "@types/eslint": "8.2.0",
-        "@types/jest": "27.0.3",
-        "@types/node": "16.11.11",
-        "@typescript-eslint/eslint-plugin": "5.5.0",
-        "@typescript-eslint/parser": "5.5.0",
-        "class-validator": "^0.14.0",
-        "eslint": "8.3.0",
-        "eslint-config-prettier": "8.3.0",
-        "eslint-plugin-import": "2.25.3",
-        "eslint-plugin-jsdoc": "37.1.0",
+        "@commitlint/cli": "19.1.0",
+        "@commitlint/config-conventional": "19.1.0",
+        "@semantic-release/changelog": "6.0.3",
+        "@semantic-release/exec": "6.0.3",
+        "@types/eslint": "8.56.2",
+        "@types/jest": "29.5.12",
+        "@types/node": "20.11.16",
+        "@typescript-eslint/eslint-plugin": "7.2.0",
+        "@typescript-eslint/parser": "7.2.0",
+        "@typescript-eslint/rule-tester": "7.2.0",
+        "class-validator": "^0.14.1",
+        "eslint": "8.57.0",
+        "eslint-config-prettier": "9.1.0",
         "eslint-plugin-prefer-arrow": "1.2.3",
-        "eslint-plugin-unicorn": "39.0.0",
-        "husky": "7.0.4",
-        "jest": "27.4.2",
+        "eslint-plugin-unicorn": "51.0.1",
+        "husky": "9.0.10",
+        "jest": "29.7.0",
         "jest-create-mock-instance": "2.0.0",
-        "jest-junit": "13.0.0",
-        "lint-staged": "12.1.2",
+        "jest-junit": "16.0.0",
+        "lint-staged": "15.2.2",
         "outdent": "^0.8.0",
-        "prettier": "2.5.0",
+        "prettier": "3.2.5",
         "rimraf": "^3.0.2",
-        "semantic-release": "^22.0.6",
-        "ts-jest": "27.0.7",
-        "typescript": "4.5.2"
+        "semantic-release": "23.0.2",
+        "ts-jest": "29.1.2",
+        "ts-node": "10.9.2",
+        "typescript": "5.4.2"
     },
     "peerDependencies": {
-        "@typescript-eslint/parser": "^5.0.0",
+        "@typescript-eslint/parser": "^7.0.0",
         "class-validator": "*",
-        "eslint": "^8.0.0"
+        "eslint": "^8.56.0"
     },
     "keywords": [
         "eslint",

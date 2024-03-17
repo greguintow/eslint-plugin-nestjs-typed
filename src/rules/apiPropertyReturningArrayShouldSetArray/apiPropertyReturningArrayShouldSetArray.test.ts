@@ -1,4 +1,4 @@
-import {RuleTester} from "@typescript-eslint/experimental-utils/dist/eslint-utils";
+import {RuleTester} from "@typescript-eslint/rule-tester";
 import {getFixturesRootDirectory} from "../../testing/fixtureSetup";
 import rule from "./apiPropertyReturningArrayShouldSetArray";
 
@@ -31,6 +31,33 @@ ruleTester.run("api-property-returning-array-should-set-array", rule, {
                 @Expose()
                 @ApiPropertyOptional({isArray:true})
                 thisIsAStringProp?: Array<string>;}`,
+        },
+        {
+            // should ignore using spread or constant
+            code: `class TestClass {
+                @Expose()
+                @ApiPropertyOptional(...someVariable)
+                thisIsAStringProp?: Array<string>;}`,
+        },
+        {
+            // should ignore using spread or constant
+            code: `class TestClass {
+                @Expose()
+                @ApiPropertyOptional({ ...swaggerImportDefinitionTypeOptions})
+                thisIsAStringProp?: Array<string>;}`,
+        },
+        {
+            // should ignore using spread or constant
+            code: `class TestClass {
+                @Expose()
+                @ApiPropertyOptional(someVariable)
+                thisIsAStringProp?: Array<string>;}`,
+        },
+        {
+            code: `class TestClass {
+                @Expose()
+                @ApiPropertyOptional()
+                thisIsABooleanProp = false}`,
         },
     ],
     invalid: [

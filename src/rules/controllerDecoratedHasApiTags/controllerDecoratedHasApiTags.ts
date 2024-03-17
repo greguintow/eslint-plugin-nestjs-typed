@@ -1,7 +1,4 @@
-// Import { getParserServices } from "@typescript-eslint/experimental-utils/dist/eslint-utils";
-// import * as tsutils from "tsutils";
-// import { getParserServices } from "@typescript-eslint/experimental-utils/dist/eslint-utils";
-import {TSESTree} from "@typescript-eslint/types";
+import {TSESTree} from "@typescript-eslint/utils";
 import {createRule} from "../../utils/createRule";
 import {typedTokenHelpers} from "../../utils/typedTokenHelpers";
 
@@ -20,17 +17,17 @@ export const shouldUseApiTagDecorator = (
     return hasControllerDecorator && !hasApiTagDecorator;
 };
 
-const rule = createRule({
+const rule = createRule<[], "shouldUseApiTagDecorator">({
     name: "controllers-should-supply-api-tags",
     meta: {
         docs: {
             description:
                 "Controllers should supply an ApiTag to make swagger UI easier to navigate",
-            recommended: false,
+
             requiresTypeChecking: false,
         },
         messages: {
-            shouldUseApiTagDecorator: `Controllers should use @ApiTags decorator. This makes it much easier to navigate swagger UI.`,
+            shouldUseApiTagDecorator: `Controllers should use @ApiTags decorator. This makes it much easier to navigate swagger UI. This ApiTags decorator is in the @nestjs/swagger package on npm.`,
         },
         schema: [],
         hasSuggestions: false,

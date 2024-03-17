@@ -1,13 +1,11 @@
-import {TSESTree} from "@typescript-eslint/experimental-utils";
-import {
-    isClosingParenToken,
-    isOpeningParenToken,
-    isParenthesized,
-} from "@typescript-eslint/experimental-utils/dist/ast-utils";
-import {SourceCode} from "@typescript-eslint/experimental-utils/dist/ts-eslint";
-import {Node} from "@typescript-eslint/types/dist/ast-spec";
+import {TSESTree} from "@typescript-eslint/utils";
+import {isParenthesized} from "@typescript-eslint/utils/ast-utils";
+import {SourceCode} from "@typescript-eslint/utils/ts-eslint";
 
-function getParenthesizedTimes(node: Node, sourceCode: Readonly<SourceCode>) {
+function getParenthesizedTimes(
+    node: TSESTree.Node,
+    sourceCode: Readonly<SourceCode>
+) {
     // Workaround for https://github.com/mysticatea/eslint-utils/pull/25
     if (!node.parent) {
         return 0;
@@ -22,7 +20,10 @@ function getParenthesizedTimes(node: Node, sourceCode: Readonly<SourceCode>) {
     return times;
 }
 
-export function getParentheses(node: Node, sourceCode: Readonly<SourceCode>) {
+export function getParentheses(
+    node: TSESTree.Node,
+    sourceCode: Readonly<SourceCode>
+) {
     const count = getParenthesizedTimes(node, sourceCode);
 
     if (count === 0) {
@@ -42,17 +43,17 @@ export function getParentheses(node: Node, sourceCode: Readonly<SourceCode>) {
 }
 
 export function getParenthesizedRange(
-    node: Node,
+    node: TSESTree.Node,
     sourceCode: Readonly<SourceCode>
 ): [number, number] {
     const parentheses = getParentheses(node, sourceCode);
     const [start] = (parentheses[0] || node).range;
-    const [, end] = (parentheses[parentheses.length - 1] || node).range;
+    const [, end] = (parentheses.at(-1) || node).range;
     return [start, end];
 }
 
 export function getParenthesizedText(
-    node: Node,
+    node: TSESTree.Node,
     sourceCode: Readonly<SourceCode>
 ) {
     const [start, end] = getParenthesizedRange(node, sourceCode);
@@ -61,10 +62,10 @@ export function getParenthesizedText(
 
 export function stripObject(text: string) {
     return text
-        .replace(/{|}/g, "")
+        .replaceAll(/{|}/g, "")
         .trim()
         .replace(/,$/, "")
-        .replace(/\s+/g, " ");
+        .replaceAll(/\s+/g, " ");
 }
 
 export function getPropertiesOfObjectWithNoBrackets(
