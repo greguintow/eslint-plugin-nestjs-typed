@@ -10,6 +10,7 @@ import parameterDecoratorNameMatchesRouteParam from "./paramDecoratorNameMatches
 import validateNonPrimitiveNeedsDecorators from "./validate-non-primitves-needs-type-decorator/validateNonPrimitiveNeedsDecorators";
 import validateNestedOfArrayShouldSetEach from "./validateNestedOfArrayShouldSetEach/validateNestedOfArrayShouldSetEach";
 import allPropertiesAreWhitelisted from "./allPropertiesAreWhitelisted/allPropertiesAreWhitelisted";
+import noReturnLogger from "./noReturnLogger/noReturnLogger";
 
 const allRules = {
     "api-property-matches-property-optionality":
@@ -31,6 +32,7 @@ const allRules = {
     "validate-nested-of-array-should-set-each":
         validateNestedOfArrayShouldSetEach,
     "all-properties-are-whitelisted": allPropertiesAreWhitelisted,
+    "no-return-logger": noReturnLogger,
 };
 
 export default allRules;
