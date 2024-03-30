@@ -61,6 +61,21 @@ ruleTester.run("no-return-logger", rule, {
             errors: [{messageId: "shouldNotReturnLogger"}],
         },
         {
+            name: "should not allow returning this.logger.log directly",
+            code: outdent`
+              function test() {
+                return this.logger.log('message')
+              }
+            `,
+            output: outdent`
+              function test() {
+                this.logger.log('message')
+                return
+              }
+            `,
+            errors: [{messageId: "shouldNotReturnLogger"}],
+        },
+        {
             name: "should not allow returning console.log directly",
             code: outdent`
               function test() {

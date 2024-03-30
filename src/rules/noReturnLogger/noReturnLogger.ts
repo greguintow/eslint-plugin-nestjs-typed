@@ -27,17 +27,29 @@ const rule = createRule({
             ReturnStatement: (node) => {
                 const callExpression =
                     node.argument as TSESTree.CallExpression | null;
-                const calleeObject =
+                let calleeObject =
                     callExpression?.callee?.type === "MemberExpression"
-                        ? callExpression.callee.object
+                        ? (callExpression.callee.object as
+                              | TSESTree.MemberExpression
+                              | TSESTree.Identifier)
                         : null;
+
+                if (
+                    calleeObject?.type === "MemberExpression" &&
+                    calleeObject?.object?.type === "ThisExpression" &&
+                    calleeObject?.property?.type === "Identifier" &&
+                    calleeObject?.property?.name === "logger"
+                ) {
+                    calleeObject = calleeObject.property;
+                }
+
+                const validLoggers = ["Logger", "console", "logger"];
 
                 if (
                     callExpression &&
                     calleeObject &&
                     calleeObject.type === "Identifier" &&
-                    (calleeObject.name === "Logger" ||
-                        calleeObject.name === "console")
+                    validLoggers.includes(calleeObject.name)
                 ) {
                     context.report({
                         node,
