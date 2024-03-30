@@ -16,6 +16,7 @@ import apiMethodsShouldBeGuarded from "./apiMethodsShouldBeGuarded/apiMethodsSho
 import apiMethodsShouldSpecifyApiOperation from "./apiMethodsShouldSpecifyApiOperation/apiMethodsShouldSpecifyApiOperation";
 import sortModuleMetadataArrays from "./sortModuleMetadataArrays/sortModuleMetadataArrays";
 import noDuplicateDecorators from "./noDuplicateDecorators/noDuplicateDecorators";
+import noUnnecessaryPublic from "./noUnnecessaryPublic/noUnnecessaryPublic";
 
 const allRules = {
     "all-properties-have-explicit-defined": allPropertiesHaveExplicitDefined,
@@ -44,6 +45,7 @@ const allRules = {
     "no-return-logger": noReturnLogger,
     "api-methods-should-be-guarded": apiMethodsShouldBeGuarded,
     "sort-module-metadata-arrays": sortModuleMetadataArrays,
+    "no-unnecessary-public": noUnnecessaryPublic,
 };
 
 export default allRules;

@@ -29,5 +29,6 @@ export = {
         "@greguintow/nestjs-typed/validate-nested-of-array-should-set-each":
             "error",
         "@greguintow/nestjs-typed/all-properties-are-whitelisted": "error",
+        "@greguintow/nestjs-typed/no-unnecessary-public": "error",
     },
 };
