@@ -5,12 +5,12 @@ const rule = createRule({
     meta: {
         docs: {
             description:
-                "Disallow public keyword in class methods that are not constructors.",
+                "Disallow public keyword in class methods/properties that are not constructors.",
             requiresTypeChecking: false,
         },
         messages: {
             shouldNotIncludePublic:
-                "Unnecessary public keyword in class method.",
+                "Unnecessary public keyword in class method/property.",
         },
         schema: [],
         hasSuggestions: false,
@@ -39,6 +39,26 @@ const rule = createRule({
                                 ""
                             );
                             return fixer.replaceText(node, methodWithoutPublic);
+                        },
+                    });
+                }
+            },
+            PropertyDefinition(node) {
+                if (node.accessibility === "public") {
+                    context.report({
+                        node,
+                        messageId: "shouldNotIncludePublic",
+                        fix: (fixer) => {
+                            const sourceCode = context.getSourceCode();
+                            const propertyText = sourceCode.getText(node);
+                            const propertyWithoutPublic = propertyText.replace(
+                                "public ",
+                                ""
+                            );
+                            return fixer.replaceText(
+                                node,
+                                propertyWithoutPublic
+                            );
                         },
                     });
                 }

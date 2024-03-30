@@ -31,6 +31,14 @@ ruleTester.run("no-unnecessary-public", rule, {
               }
             `,
         },
+        {
+            name: "should allow plain property",
+            code: outdent`
+              class Test {
+                test: string
+              }
+            `,
+        },
     ],
     invalid: [
         {
@@ -43,6 +51,20 @@ ruleTester.run("no-unnecessary-public", rule, {
             output: outdent`
               class Test {
                 test() {}
+              }
+            `,
+            errors: [{messageId: "shouldNotIncludePublic"}],
+        },
+        {
+            name: "should not allow allow property with public",
+            code: outdent`
+              class Test {
+                public test: string
+              }
+            `,
+            output: outdent`
+              class Test {
+                test: string
               }
             `,
             errors: [{messageId: "shouldNotIncludePublic"}],
