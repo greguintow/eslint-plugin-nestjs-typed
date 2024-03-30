@@ -1,6 +1,7 @@
 {
     "name": "@greguintow/eslint-plugin-nestjs-typed",
-    "version": "2.0.0",
+    "version": "2.1.1",
+    "private": false,
     "description": "Eslint rules for nestjs projects",
     "scripts": {
         "clean": "rimraf dist",
@@ -19,10 +20,10 @@
             "main"
         ]
     },
-    "homepage": "https://github.com/greguintow/eslint-plugin-nestjs-typed",
+    "homepage": "https://github.com/darraghoriordan/eslint-plugin-nestjs-typed",
     "repository": {
         "type": "git",
-        "url": "https://github.com/greguintow/eslint-plugin-nestjs-typed"
+        "url": "git+https://github.com/darraghoriordan/eslint-plugin-nestjs-typed.git"
     },
     "engines": {
         "node": "^18.18.0 || >=20.0.0"
