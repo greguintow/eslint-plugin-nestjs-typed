@@ -1,6 +1,6 @@
 {
     "name": "@greguintow/eslint-plugin-nestjs-typed",
-    "version": "2.1.1",
+    "version": "2.2.0",
     "private": false,
     "description": "Eslint rules for nestjs projects",
     "scripts": {
@@ -41,10 +41,7 @@
     "main": "dist/index.js",
     "types": "index.d.ts",
     "dependencies": {
-        "@typescript-eslint/scope-manager": "7.2.0",
-        "@typescript-eslint/utils": "7.2.0",
-        "eslint-module-utils": "2.8.0",
-        "reflect-metadata": "0.2.1"
+        "eslint-module-utils": "2.8.0"
     },
     "devDependencies": {
         "@commitlint/cli": "19.1.0",
@@ -57,6 +54,8 @@
         "@typescript-eslint/eslint-plugin": "7.2.0",
         "@typescript-eslint/parser": "7.2.0",
         "@typescript-eslint/rule-tester": "7.2.0",
+        "@typescript-eslint/scope-manager": "7.2.0",
+        "@typescript-eslint/utils": "7.2.0",
         "class-validator": "^0.14.1",
         "eslint": "8.57.0",
         "eslint-config-prettier": "9.1.0",
@@ -69,6 +68,7 @@
         "lint-staged": "15.2.2",
         "outdent": "^0.8.0",
         "prettier": "3.2.5",
+        "reflect-metadata": "0.2.1",
         "rimraf": "^3.0.2",
         "semantic-release": "23.0.2",
         "ts-jest": "29.1.2",
@@ -76,8 +76,11 @@
         "typescript": "5.4.2"
     },
     "peerDependencies": {
-        "@typescript-eslint/parser": "^7.0.0",
+        "@typescript-eslint/parser": ">=7.0.0",
+        "@typescript-eslint/scope-manager": ">=7.0.0",
+        "@typescript-eslint/utils": ">=7.0.0",
         "class-validator": "*",
+        "reflect-metadata": "*",
         "eslint": "^8.56.0"
     },
     "keywords": [
